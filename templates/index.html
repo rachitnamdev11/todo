@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>Todo Dashboard</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+body{
+background:#f4f4f4;
+font-family:Arial;
+}
+
+.container{
+width:600px;
+margin:auto;
+margin-top:80px;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.top-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.logout{
+background:#e74c3c;
+color:white;
+padding:8px 12px;
+text-decoration:none;
+border-radius:5px;
+}
+
+.input-box{
+display:flex;
+gap:10px;
+margin-bottom:20px;
+}
+
+input{
+flex:1;
+padding:10px;
+font-size:14px;
+}
+
+button{
+padding:10px 15px;
+background:#2ecc71;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+button:hover{
+background:#27ae60;
+}
+
+ul{
+list-style:none;
+padding:0;
+}
+
+li{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.completed{
+text-decoration:line-through;
+color:gray;
+}
+
+.task-buttons{
+display:flex;
+gap:8px;
+}
+
+.delete-btn{
+background:#e74c3c;
+}
+
+.complete-btn{
+background:#3498db;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="top-bar">
+
+<h2>My Todo Tasks</h2>
+
+<a href="/logout" class="logout">Logout</a>
+
+</div>
+
+<div class="input-box">
+
+<input id="taskInput" placeholder="Enter new task">
+
+<button onclick="addTask()">Add Task</button>
+
+<button onclick="loadTasks()">Refresh</button>
+
+</div>
+
+<ul id="taskList"></ul>
+
+</div>
+
+<script>
+
+const API="/tasks"
+
+
+async function loadTasks(){
+
+let res = await fetch(API)
+
+let tasks = await res.json()
+
+let list = document.getElementById("taskList")
+
+list.innerHTML=""
+
+
+tasks.forEach(task=>{
+
+let li=document.createElement("li")
+
+if(task.completed){
+li.classList.add("completed")
+}
+
+
+li.innerHTML=`
+
+<span>${task.title}</span>
+
+<div class="task-buttons">
+
+<button class="complete-btn" onclick="toggleTask('${task.id}')">
+Done
+</button>
+
+<button class="delete-btn" onclick="deleteTask('${task.id}')">
+Delete
+</button>
+
+</div>
+
+`
+
+list.appendChild(li)
+
+})
+
+}
+
+
+async function addTask(){
+
+let input=document.getElementById("taskInput")
+
+let title=input.value
+
+
+if(title==""){
+alert("Enter a task")
+return
+}
+
+
+await fetch(API,{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({title:title})
+
+})
+
+
+input.value=""
+
+loadTasks()
+
+}
+
+
+async function toggleTask(id){
+
+await fetch(`/tasks/${id}`,{
+
+method:"PUT"
+
+})
+
+loadTasks()
+
+}
+
+
+async function deleteTask(id){
+
+await fetch(`/tasks/${id}`,{
+
+method:"DELETE"
+
+})
+
+loadTasks()
+
+}
+
+
+loadTasks()
+
+</script>
+
+</body>
+
+</html>

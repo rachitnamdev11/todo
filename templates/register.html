@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Create Account</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+body{
+background:#f4f4f4;
+font-family:Arial;
+}
+
+.container{
+width:350px;
+margin:auto;
+margin-top:120px;
+background:white;
+padding:30px;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+text-align:center;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-top:10px;
+margin-bottom:15px;
+}
+
+button{
+width:100%;
+padding:10px;
+background:#2ecc71;
+border:none;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+button:hover{
+background:#27ae60;
+}
+
+a{
+text-decoration:none;
+color:#3498db;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Create Account</h2>
+
+<input id="username" placeholder="Enter Username">
+
+<input id="password" type="password" placeholder="Enter Password">
+
+<button onclick="register()">Register</button>
+
+<p>Already have an account?</p>
+
+<a href="/login">Login Here</a>
+
+</div>
+
+<script>
+
+async function register(){
+
+let username = document.getElementById("username").value
+let password = document.getElementById("password").value
+
+
+if(username=="" || password==""){
+alert("Please fill all fields")
+return
+}
+
+
+let res = await fetch("/register",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+username:username,
+password:password
+})
+
+})
+
+
+let data = await res.json()
+
+
+if(data.status=="success"){
+
+alert("Account Created Successfully")
+
+location.href="/login"
+
+}
+
+else if(data.status=="exists"){
+
+alert("User already exists")
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
